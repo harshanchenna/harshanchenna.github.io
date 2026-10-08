@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import { projects } from '../../data/projects';
+---
+
+<Base title="Projects">
+  <h1>Projects</h1>
+  <p class="muted">Things I've built and open-sourced. Each page is the project's README, synced from GitHub.</p>
+  <ul class="plain">
+    {projects.map((p) => (
+      <li class="entry">
+        <h2><a href={`/projects/${p.slug}/`}>{p.repo}</a></h2>
+        <p class="muted">{p.blurb}</p>
+        <p><a href={`https://github.com/${p.owner}/${p.repo}`}>github.com/{p.owner}/{p.repo}</a></p>
+      </li>
+    ))}
+  </ul>
+</Base>

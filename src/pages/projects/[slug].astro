@@ -1,0 +1,36 @@
+---
+import { marked } from 'marked';
+import Base from '../../layouts/Base.astro';
+import { projects } from '../../data/projects';
+import { fetchProjectReadme } from '../../lib/github';
+
+export async function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const readme = await fetchProjectReadme(project);
+const html = readme.ok ? marked.parse(readme.markdown) : '';
+---
+
+<Base title={project.repo} description={project.blurb}>
+  <p><a href="/projects/">&larr; All projects</a></p>
+  <h1>{project.repo}</h1>
+  <p>
+    <a href={`https://github.com/${project.owner}/${project.repo}`}>
+      github.com/{project.owner}/{project.repo}
+    </a>
+    <span class="pill">{project.branch}</span>
+  </p>
+  {readme.ok ? (
+    <article set:html={html} />
+  ) : (
+    <p class="muted">
+      Couldn't fetch the README at build time ({readme.error}). See the repo
+      directly on <a href={`https://github.com/${project.owner}/${project.repo}`}>GitHub</a>.
+    </p>
+  )}
+</Base>
